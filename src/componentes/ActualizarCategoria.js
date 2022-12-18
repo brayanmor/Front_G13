@@ -1,18 +1,32 @@
-import React, { useState }  from 'react';
+import React, { useEffect, useState }  from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar'; 
 import crud from '../conexiones/crud';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import swal from 'sweetalert'; 
 
-const CrearCategoria = () => {
+const ActualizarCategoria = () => {
+    
   const navigate = useNavigate(); 
+
+  const {idCategoria} = useParams();
+    console.log(idCategoria);
     
     const [categoria, setCategoria] = useState({
         nombre:'',
         imagen:''
       })
+      const cargarCategoria = async () =>{
+        const response = await crud.GET(`/api/categoria/${idCategoria}`);
+       // console.log(response);
+        setCategoria(response.categoria);
+      }
+      useEffect(() =>{ 
+        cargarCategoria();
+      },[]);
+
       
-    const { nombre, imagen } = categoria;
+    let { nombre, imagen } = categoria;
 
       const onChange = (e) =>{
         setCategoria({
@@ -21,23 +35,39 @@ const CrearCategoria = () => {
         })
       }
 
-      const crearCategoria = async () =>{
+      const actualizarCategoria = async () =>{
         const data = {
           nombre: categoria.nombre,
           imagen: categoria.imagen
         }
-       
-          const response = await crud.POST(`/api/categoria`, data);
-          const mensaje = response.msg;
-          console.log(mensaje);
+       //console.log(data, idCategoria);
+          const response = await crud.PUT(`/api/categoria/${idCategoria}`, data);
+          console.log(response);
+          const mensaje1 = "la categoria se actualizo correctamente";
+          swal({
+            title:'Información',
+            text: mensaje1,
+            icon: 'success',
+            buttons:{
+              confirm:{
+                text: 'OK',
+                value: true,
+                visible: true,
+                className: 'btn btn-primary',
+                closeModal: true
+              }
+            }
+          });
           navigate("/admin");
          
       }
     
       const onSubmit = (e) => {
         e.preventDefault();
-        crearCategoria();
+        actualizarCategoria();
       }
+      
+     
       
   return (
     <>
@@ -47,7 +77,7 @@ const CrearCategoria = () => {
         <main className='flex-1'>
         <div className='mt-10 flex justify-center'>
         <h1 className="inline bg-gradient-to-r from-indigo-200 via-violet-700 to-indigo-200 bg-clip-text font-display text-5xl tracking-tight text-transparent">
-              Crear Categoria
+              Actualizar Categoria
             </h1>
         </div>
         
@@ -73,7 +103,7 @@ const CrearCategoria = () => {
                   type="text"
                   id="imagen"
                   name="imagen"
-                  placeholder='Nombre'
+                  placeholder='imagen'
                   className='w-full mt-3 p-3 border rounded-lg bg-gray-50'
                   value={imagen}
                   onChange={onChange}
@@ -82,7 +112,7 @@ const CrearCategoria = () => {
 
               <input 
                 type="submit"
-                value="Crear Categoria"
+                value="Actualizar Categoria"
                 className="bg-violet-600 mb-5 w-full py-3 text-white uppercase font-bold rounded hover:cursor-pointer hover:bg-violet-400 transition-colors"
             />
 
@@ -94,11 +124,8 @@ const CrearCategoria = () => {
       </div>
       
       
-    
-      
-      
       </>
     );
 }
 
-export default CrearCategoria;
+export default ActualizarCategoria;

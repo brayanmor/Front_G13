@@ -30,8 +30,8 @@ const Login = () => {
     const response = await crud.POST(`/api/auth`, data);
       const mensaje = response.msg;
       console.log(mensaje);
-      if(mensaje === ' el usuario no existe'){
-        const mensaje = " el usuario no existe";
+      if(mensaje === 'el usuario no existe'){
+        const mensaje = "el usuario no existe";
         swal({
           title: 'Error',
           text: mensaje,
@@ -63,12 +63,13 @@ const Login = () => {
           }
         })
       }else{
-
+        
         const jwt = response.token;
 
         localStorage.setItem('token', jwt);
-
-         //redireccionar a la pantalla de admistrador
+        
+        
+        //redireccionar a la pantalla de admistrador
          navigate("/admin");
       }
   }
